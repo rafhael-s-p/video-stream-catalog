@@ -1,6 +1,10 @@
 package com.studies.catalog.domain;
 
+import com.studies.catalog.domain.category.Category;
+import com.studies.catalog.domain.utils.InstantUtils;
 import net.datafaker.Faker;
+
+import java.util.UUID;
 
 public final class Fixture {
 
@@ -48,6 +52,33 @@ public final class Fixture {
 
     public static String checksum() {
         return "03fe62de";
+    }
+
+    public static final class Categories {
+
+        public static Category movies() {
+            return Category.with(
+                    UUID.randomUUID().toString().replace("-", ""),
+                    "Movies",
+                    "Some description",
+                    true,
+                    InstantUtils.now(),
+                    InstantUtils.now(),
+                    null
+            );
+        }
+
+        public static Category trailers() {
+            return Category.with(
+                    UUID.randomUUID().toString().replace("-", ""),
+                    "Lives",
+                    "Some description",
+                    true,
+                    InstantUtils.now(),
+                    InstantUtils.now(),
+                    null
+            );
+        }
     }
 
 }
