@@ -55,11 +55,10 @@ class ListCategoryUseCaseTest extends UseCaseTest {
         final var currentOutput = this.useCase.execute(aQuery);
 
         // then
-        Assertions.assertEquals(expectedPage, currentOutput.currentPage());
-        Assertions.assertEquals(expectedPerPage, currentOutput.perPage());
-        Assertions.assertEquals(expectedItemsCount, currentOutput.items().size());
-        Assertions.assertEquals(expectedItems.size(), currentOutput.items().size());
-        Assertions.assertTrue(expectedItems.containsAll(currentOutput.items())
-        );
+        Assertions.assertEquals(expectedPage, currentOutput.meta().currentPage());
+        Assertions.assertEquals(expectedPerPage, currentOutput.meta().perPage());
+        Assertions.assertEquals(expectedItemsCount, currentOutput.meta().total());
+        Assertions.assertEquals(expectedItems.size(), currentOutput.data().size());
+        Assertions.assertTrue(expectedItems.containsAll(currentOutput.data()));
     }
 }
