@@ -11,7 +11,7 @@ bootJar {
     destinationDirectory.set(file("${rootProject.buildDir}/libs"))
 }
 
-group 'com.studies.catalog.admin.infrastructure'
+group 'com.studies.catalog.infrastructure'
 
 dependencies {
     implementation(project(":domain"))
