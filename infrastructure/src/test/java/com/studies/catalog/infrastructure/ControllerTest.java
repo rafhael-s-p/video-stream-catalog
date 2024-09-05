@@ -1,4 +1,4 @@
-package com.studies.catalog;
+package com.studies.catalog.infrastructure;
 
 import com.studies.catalog.infrastructure.configuration.ObjectMapperConfig;
 import org.junit.jupiter.api.Tag;
