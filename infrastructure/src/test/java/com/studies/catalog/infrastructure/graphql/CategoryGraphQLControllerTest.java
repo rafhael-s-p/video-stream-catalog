@@ -18,7 +18,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@GraphQLControllerTest
+@GraphQLControllerTest(controllers = CategoryGraphQLController.class)
 class CategoryGraphQLControllerTest {
 
     @MockBean
