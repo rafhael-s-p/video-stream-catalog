@@ -1,3 +1,8 @@
+elasticsearch:
+  uris: http://localhost:9200
+  username: elastic
+  password: elastic
+
 logging:
   level:
     ROOT: info
