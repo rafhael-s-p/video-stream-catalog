@@ -1,4 +1,4 @@
-package com.studies.catalog.infrastructure;
+package com.studies.catalog;
 
 import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
