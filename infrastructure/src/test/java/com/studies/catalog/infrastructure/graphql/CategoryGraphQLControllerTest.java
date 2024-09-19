@@ -9,7 +9,7 @@ import com.studies.catalog.domain.category.CategorySearchQuery;
 import com.studies.catalog.domain.pagination.Pagination;
 import com.studies.catalog.domain.utils.IdUtils;
 import com.studies.catalog.domain.utils.InstantUtils;
-import com.studies.catalog.infrastructure.GraphQLControllerTest;
+import com.studies.catalog.GraphQLControllerTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -150,9 +150,9 @@ class CategoryGraphQLControllerTest {
                 "name", expectedName,
                 "description", expectedDescription,
                 "active", expectedActive,
-                "createdAt", expectedCreatedAt,
-                "updatedAt", expectedUpdatedAt,
-                "deletedAt", expectedDeletedAt
+                "createdAt", expectedCreatedAt.toString(),
+                "updatedAt", expectedUpdatedAt.toString(),
+                "deletedAt", expectedDeletedAt.toString()
         );
 
         final var query = """

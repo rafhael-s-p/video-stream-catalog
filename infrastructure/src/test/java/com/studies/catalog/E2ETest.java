@@ -1,4 +1,4 @@
-package com.studies.catalog.infrastructure;
+package com.studies.catalog;
 
 import com.studies.catalog.infrastructure.configuration.WebServerConfig;
 import org.junit.jupiter.api.Tag;

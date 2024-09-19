@@ -1,3 +1,8 @@
+elasticsearch:
+  uris: ${ELASTICSEARCH_URIS}
+  username: ${ELASTICSEARCH_USERNAME}
+  password: ${ELASTICSEARCH_PASSWORD}
+
 keycloak:
   realm: ${KEYCLOAK_REALM:video-stream}
   host: ${KEYCLOAK_HOST:http://localhost:8443}
