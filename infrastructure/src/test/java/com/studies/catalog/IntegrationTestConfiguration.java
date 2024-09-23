@@ -1,6 +1,6 @@
 package com.studies.catalog;
 
-import com.studies.catalog.infrastructure.category.CategoryRepository;
+import com.studies.catalog.infrastructure.category.persistence.CategoryRepository;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 
