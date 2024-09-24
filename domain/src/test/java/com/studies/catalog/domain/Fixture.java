@@ -71,7 +71,19 @@ public final class Fixture {
         public static Category trailers() {
             return Category.with(
                     UUID.randomUUID().toString().replace("-", ""),
-                    "Lives",
+                    "Trailers",
+                    "Some description",
+                    true,
+                    InstantUtils.now(),
+                    InstantUtils.now(),
+                    null
+            );
+        }
+
+        public static Category violence() {
+            return Category.with(
+                    UUID.randomUUID().toString().replace("-", ""),
+                    "Violence",
                     "Some description",
                     true,
                     InstantUtils.now(),
