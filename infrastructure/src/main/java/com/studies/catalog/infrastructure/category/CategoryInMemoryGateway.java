@@ -4,13 +4,13 @@ import com.studies.catalog.domain.category.Category;
 import com.studies.catalog.domain.category.CategoryGateway;
 import com.studies.catalog.domain.category.CategorySearchQuery;
 import com.studies.catalog.domain.pagination.Pagination;
-import org.springframework.stereotype.Component;
+//import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+//@Component
 public class CategoryInMemoryGateway implements CategoryGateway {
 
     private final ConcurrentHashMap<String, Category> db;
