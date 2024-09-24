@@ -34,7 +34,7 @@ public class CategoryElasticsearchGateway implements CategoryGateway {
 
     @Override
     public void deleteById(String anId) {
-        throw new UnsupportedOperationException();
+        this.categoryRepository.deleteById(anId);
     }
 
     @Override
