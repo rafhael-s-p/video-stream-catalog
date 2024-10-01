@@ -15,7 +15,7 @@ elasticsearch:
   socket-timeout: 1_000
 
 graphql:
-  graphiql: false
+  graphiql: true
 
 server:
   port: 8080
