@@ -5,7 +5,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -16,8 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-//@EnableKafkaRetryTopic
-@Profile({"prod", "dev", "sandbox", "e2e-test"})
 public class KafkaConfig {
 
     private final KafkaProperties properties;
