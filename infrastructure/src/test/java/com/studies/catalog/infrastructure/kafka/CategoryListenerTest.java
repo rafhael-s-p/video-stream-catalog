@@ -50,7 +50,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
     private ArgumentCaptor<ConsumerRecordMetadata> metadata;
 
     @Test
-    public void testCategoriesTopics() throws Exception {
+    void testCategoriesTopics() throws Exception {
         // given
         final var expectedMainTopic = "adm_videos_mysql.adm_videos.categories";
         final var expectedRetry0Topic = "adm_videos_mysql.adm_videos.categories-retry-0";
@@ -59,7 +59,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
         final var expectedDLTTopic = "adm_videos_mysql.adm_videos.categories-dlt";
 
         // when
-        final var currentTopics = admin().listTopics().listings().get().stream()
+        final var currentTopics = admin().listTopics().listings().get(10, TimeUnit.SECONDS).stream()
                 .map(TopicListing::name)
                 .collect(Collectors.toSet());
 
@@ -72,7 +72,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    public void givenInvalidResponsesFromHandlerShouldRetryUntilGoesToDLT() throws Exception {
+    void givenInvalidResponsesFromHandlerShouldRetryUntilGoesToDLT() throws Exception {
         // given
         final var expectedMaxAttempts = 4;
         final var expectedMaxDLTAttempts = 1;
@@ -99,8 +99,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(deleteCategoryUseCase).execute(any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, message));
-        producer().flush();
+        producer().send(new ProducerRecord<>(categoryTopic, message)).get(10, TimeUnit.SECONDS);
 
         Assertions.assertTrue(latch.await(1, TimeUnit.MINUTES));
 
@@ -119,7 +118,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    public void givenUpdateOperationWhenProcessGoesOKShouldEndTheOperation() throws Exception {
+    void givenUpdateOperationWhenProcessGoesOKShouldEndTheOperation() throws Exception {
         // given
         final var movies = Fixture.Categories.movies();
         final var moviesEvent = new CategoryEvent(movies.id());
@@ -137,8 +136,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
         doReturn(Optional.of(movies)).when(categoryGateway).categoryOfId(any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, message));
-        producer().flush();
+        producer().send(new ProducerRecord<>(categoryTopic, message)).get(10, TimeUnit.SECONDS);
 
         Assertions.assertTrue(latch.await(1, TimeUnit.MINUTES));
 
@@ -149,7 +147,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    public void givenCreateOperationWhenProcessGoesOKShouldEndTheOperation() throws Exception {
+    void givenCreateOperationWhenProcessGoesOKShouldEndTheOperation() throws Exception {
         // given
         final var movies = Fixture.Categories.movies();
         final var moviesEvent = new CategoryEvent(movies.id());
@@ -167,8 +165,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
         doReturn(Optional.of(movies)).when(categoryGateway).categoryOfId(any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, message));
-        producer().flush();
+        producer().send(new ProducerRecord<>(categoryTopic, message)).get(10, TimeUnit.SECONDS);
 
         Assertions.assertTrue(latch.await(1, TimeUnit.MINUTES));
 
@@ -179,7 +176,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    public void givenDeleteOperationWhenProcessGoesOKShouldEndTheOperation() throws Exception {
+    void givenDeleteOperationWhenProcessGoesOKShouldEndTheOperation() throws Exception {
         // given
         final var movies = Fixture.Categories.movies();
         final var moviesEvent = new CategoryEvent(movies.id());
@@ -195,8 +192,7 @@ class CategoryListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(deleteCategoryUseCase).execute(any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, message));
-        producer().flush();
+        producer().send(new ProducerRecord<>(categoryTopic, message)).get(10, TimeUnit.SECONDS);
 
         Assertions.assertTrue(latch.await(1, TimeUnit.MINUTES));
 
