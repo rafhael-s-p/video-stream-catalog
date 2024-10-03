@@ -1,9 +1,21 @@
+kafka:
+  auto-create-topics: false
+  bootstrap-servers: localhost:9092
+  pool-timeout: 1_000
+  consumers:
+    categories:
+      auto-offset-reset: earliest
+      concurrency: 1
+      id: kafka-listener-categories
+      topics: adm_videos_mysql.adm_videos.categories
+      group-id: catalog-service
+
 elasticsearch:
   connect-timeout: 250
   socket-timeout: 1_000
 
 graphql:
-  graphiql: false
+  graphiql: true
 
 server:
   port: 8080
