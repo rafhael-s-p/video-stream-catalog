@@ -2,8 +2,8 @@ plugins {
     id 'java-conventions'
     id 'jacoco-report-aggregation'
     id 'application'
-    id 'org.springframework.boot' version '3.1.1'
-    id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
 bootJar {
@@ -16,6 +16,8 @@ group 'com.studies.catalog.infrastructure'
 dependencies {
     implementation(project(":domain"))
     implementation(project(":application"))
+
+    implementation('com.google.guava:guava:33.0.0-jre')
 
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude module: 'spring-boot-starter-tomcat'
