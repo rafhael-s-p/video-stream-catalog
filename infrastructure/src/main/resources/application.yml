@@ -1,3 +1,7 @@
+rest-client:
+  categories:
+    base-url: "${rest-client.base-url}/api/categories"
+
 kafka:
   auto-create-topics: false
   bootstrap-servers: localhost:9092
