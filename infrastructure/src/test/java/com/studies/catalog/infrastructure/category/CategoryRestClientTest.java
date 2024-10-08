@@ -1,52 +1,32 @@
 package com.studies.catalog.infrastructure.category;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.studies.catalog.IntegrationTestConfiguration;
+import com.studies.catalog.AbstractRestClientTest;
 import com.studies.catalog.domain.Fixture;
 import com.studies.catalog.domain.exceptions.InternalErrorException;
 import com.studies.catalog.infrastructure.category.models.CategoryDTO;
-import com.studies.catalog.infrastructure.configuration.WebServerConfig;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-@Tag("integrationTest")
-@ActiveProfiles("integration-test")
-@AutoConfigureWireMock(port = 0)
-@EnableAutoConfiguration(exclude = {
-        ElasticsearchRepositoriesAutoConfiguration.class,
-        KafkaAutoConfiguration.class,
-})
-@SpringBootTest(classes = {WebServerConfig.class, IntegrationTestConfiguration.class})
-class CategoryRestClientTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
+class CategoryRestClientTest extends AbstractRestClientTest {
 
     @Autowired
     private CategoryRestClient target;
 
     // OK
     @Test
-    void givenACategory_whenReceive200FromServer_shouldBeOk() throws IOException {
+    void givenACategory_whenReceive200FromServer_shouldBeOk() {
         // given
         final var movies = Fixture.Categories.movies();
 
-        final var responseBody = objectMapper.writeValueAsString(new CategoryDTO(
+        final var responseBody = writeValueAsString(new CategoryDTO(
                 movies.id(),
                 movies.name(),
                 movies.description(),
@@ -76,6 +56,8 @@ class CategoryRestClientTest {
         Assertions.assertEquals(movies.createdAt(), currentCategory.createdAt());
         Assertions.assertEquals(movies.updatedAt(), currentCategory.updatedAt());
         Assertions.assertEquals(movies.deletedAt(), currentCategory.deletedAt());
+
+        verify(1, getRequestedFor(urlPathEqualTo("/api/categories/%s".formatted(movies.id()))));
     }
 
     // 5XX
@@ -83,9 +65,9 @@ class CategoryRestClientTest {
     void givenACategory_whenReceive5xxFromServer_shouldReturnInternalError() throws IOException {
         // given
         final var expectedId = "123";
-        final var expectedErrorMessage = "Failed to get Category of id %s".formatted(expectedId);
+        final var expectedErrorMessage = "Error observed from categories [resourceId:%s] [status:500]".formatted(expectedId);
 
-        final var responseBody = objectMapper.writeValueAsString(Map.of("message", "Internal Server Error"));
+        final var responseBody = writeValueAsString(Map.of("message", "Internal Server Error"));
 
         stubFor(
                 get(urlPathEqualTo("/api/categories/%s".formatted(expectedId)))
@@ -101,6 +83,8 @@ class CategoryRestClientTest {
 
         // then
         Assertions.assertEquals(expectedErrorMessage, currentEx.getMessage());
+
+        verify(2, getRequestedFor(urlPathEqualTo("/api/categories/%s".formatted(expectedId))));
     }
 
     // 404
@@ -108,7 +92,7 @@ class CategoryRestClientTest {
     void givenACategory_whenReceive404NotFoundFromServer_shouldReturnEmpty() throws IOException {
         // given
         final var expectedId = "123";
-        final var responseBody = objectMapper.writeValueAsString(Map.of("message", "Not found"));
+        final var responseBody = writeValueAsString(Map.of("message", "Not found"));
 
         stubFor(
                 get(urlPathEqualTo("/api/categories/%s".formatted(expectedId)))
@@ -124,6 +108,8 @@ class CategoryRestClientTest {
 
         // then
         Assertions.assertTrue(currentCategory.isEmpty());
+
+        verify(1, getRequestedFor(urlPathEqualTo("/api/categories/%s".formatted(expectedId))));
     }
 
     // Timeout
@@ -131,9 +117,9 @@ class CategoryRestClientTest {
     void givenACategory_whenReceiveTimeout_shouldReturnInternalError() throws IOException {
         // given
         final var movies = Fixture.Categories.movies();
-        final var expectedErrorMessage = "Timeout from category of ID %s".formatted(movies.id());
+        final var expectedErrorMessage = "Timeout observed from categories [resourceId:%s]".formatted(movies.id());
 
-        final var responseBody = objectMapper.writeValueAsString(new CategoryDTO(
+        final var responseBody = writeValueAsString(new CategoryDTO(
                 movies.id(),
                 movies.name(),
                 movies.description(),
@@ -149,7 +135,7 @@ class CategoryRestClientTest {
                         .willReturn(aResponse()
                                 .withStatus(200)
                                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                                .withFixedDelay(600)
+                                .withFixedDelay(3000)
                                 .withBody(responseBody)
                         )
         );
@@ -159,5 +145,7 @@ class CategoryRestClientTest {
 
         // then
         Assertions.assertEquals(expectedErrorMessage, currentEx.getMessage());
+
+        verify(2, getRequestedFor(urlPathEqualTo("/api/categories/%s".formatted(movies.id()))));
     }
 }
