@@ -22,6 +22,7 @@ dependencies {
         exclude module: 'spring-boot-starter-tomcat'
     }
 
+    implementation("io.github.resilience4j:resilience4j-bulkhead")
     implementation("io.github.resilience4j:resilience4j-spring-boot3")
     implementation("io.github.resilience4j:resilience4j-retry")
     implementation("org.springframework.boot:spring-boot-starter-aop")
