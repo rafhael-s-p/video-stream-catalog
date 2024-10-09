@@ -3,7 +3,9 @@ package com.studies.catalog;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.studies.catalog.infrastructure.category.CategoryRestClient;
 import com.studies.catalog.infrastructure.configuration.WebServerConfig;
+import io.github.resilience4j.bulkhead.BulkheadRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
 
 @ActiveProfiles("integration-test")
 @AutoConfigureWireMock(port = 0)
@@ -24,13 +28,27 @@ import org.springframework.test.context.ActiveProfiles;
 @Tag("integrationTest")
 public abstract class AbstractRestClientTest {
 
+    protected static final String CATEGORY = CategoryRestClient.NAMESPACE;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private BulkheadRegistry bulkheadRegistry;
 
     @BeforeEach
     void before() {
         WireMock.reset();
         WireMock.resetAllRequests();
+        List.of(CATEGORY).forEach(this::resetFaultTolerance);
+    }
+
+    protected void acquireBulkheadPermission(final String name) {
+        bulkheadRegistry.bulkhead(name).acquirePermission();
+    }
+
+    protected void releaseBulkheadPermission(final String name) {
+        bulkheadRegistry.bulkhead(name).releasePermission();
     }
 
     protected String writeValueAsString(final Object obj) {
@@ -39,5 +57,9 @@ public abstract class AbstractRestClientTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void resetFaultTolerance(final String name) {
+
     }
 }
