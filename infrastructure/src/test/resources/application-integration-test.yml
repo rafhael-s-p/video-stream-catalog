@@ -17,3 +17,8 @@ resilience4j.retry:
     default:
       maxAttempts: 2
       waitDuration: 750
+
+resilience4j.bulkhead:
+  configs:
+    default:
+      maxConcurrentCalls: 1

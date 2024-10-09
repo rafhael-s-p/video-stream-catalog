@@ -72,3 +72,12 @@ resilience4j.retry:
   instances:
     categories:
       baseConfig: default
+
+resilience4j.bulkhead:
+  configs:
+    default:
+      maxConcurrentCalls: 25
+      maxWaitDuration: 100
+    instances:
+      categories:
+        baseConfig: default
