@@ -22,3 +22,12 @@ resilience4j.bulkhead:
   configs:
     default:
       maxConcurrentCalls: 1
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      minimumNumberOfCalls: 3
+      permittedNumberOfCallsInHalfOpenState: 1
+      failureRateThreshold: 50
+      slowCallRateThreshold: 50
+      slowCallDurationThreshold: 300
