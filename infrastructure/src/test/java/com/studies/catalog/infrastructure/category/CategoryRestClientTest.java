@@ -5,6 +5,8 @@ import com.studies.catalog.domain.Fixture;
 import com.studies.catalog.domain.exceptions.InternalErrorException;
 import com.studies.catalog.infrastructure.category.models.CategoryDTO;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,5 +166,50 @@ class CategoryRestClientTest extends AbstractRestClientTest {
         Assertions.assertEquals(expectedErrorMessage, currentEx.getMessage());
 
         releaseBulkheadPermission(CATEGORY);
+    }
+
+    @Test
+    public void givenCall_whenCBIsOpen_shouldReturnError() {
+        // given
+        transitionToOpenState(CATEGORY);
+        final var expectedId = "123";
+        final var expectedErrorMessage = "CircuitBreaker 'categories' is OPEN and does not permit further calls";
+
+        // when
+        final var currentEx = Assertions.assertThrows(CallNotPermittedException.class, () -> this.target.getById(expectedId));
+
+        // then
+        checkCircuitBreakerState(CATEGORY, CircuitBreaker.State.OPEN);
+        Assertions.assertEquals(expectedErrorMessage, currentEx.getMessage());
+
+        verify(0, getRequestedFor(urlPathEqualTo("/api/categories/%s".formatted(expectedId))));
+    }
+
+    @Test
+    public void givenServerError_whenIsMoreThanThreshold_shouldOpenCircuitBreaker() {
+        // given
+        final var expectedId = "123";
+        final var expectedErrorMessage = "CircuitBreaker 'categories' is OPEN and does not permit further calls";
+
+        final var responseBody = writeValueAsString(Map.of("message", "Internal Server Error"));
+
+        stubFor(
+                get(urlPathEqualTo("/api/categories/%s".formatted(expectedId)))
+                        .willReturn(aResponse()
+                                .withStatus(500)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .withBody(responseBody)
+                        )
+        );
+
+        // when
+        Assertions.assertThrows(InternalErrorException.class, () -> this.target.getById(expectedId));
+        final var currentEx = Assertions.assertThrows(CallNotPermittedException.class, () -> this.target.getById(expectedId));
+
+        // then
+        checkCircuitBreakerState(CATEGORY, CircuitBreaker.State.OPEN);
+        Assertions.assertEquals(expectedErrorMessage, currentEx.getMessage());
+
+        verify(3, getRequestedFor(urlPathEqualTo("/api/categories/%s".formatted(expectedId))));
     }
 }
